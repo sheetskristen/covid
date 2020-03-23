@@ -1,0 +1,12 @@
+/2020-03-13/
+CORD-19-research-challenge.zip
+results.png
+results_*.png
+/.idea/
+test.jsonl
+/data/tmnt/bio*.jsonl
+/data/tmnt/*comm_use_subset.jsonl
+/data/tmnt/covid.jsonl
+/data/tmnt/test/
+/data/tmnt/train/
+/data/tmnt/vector_files/
