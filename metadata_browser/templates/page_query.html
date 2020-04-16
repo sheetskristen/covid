@@ -1,0 +1,31 @@
+<!doctype html>
+
+<body bgcolor="white">
+<title>My search page!</title>
+<style>
+dd {
+    width:100%
+}
+</style>
+<div style="width:100%">
+<h3 style="background-color:black;color:lightgrey"> CORD-19 Document Metadata Search </h3>
+
+<h1> CORD-19 Document Metadata page</h1>
+
+
+<form action="/results" name="search" method="post">
+    <dl>
+        <p>Free text search:</p>
+        <dd><textarea rows="4" cols="100" name="query"></textarea>  
+        <dd>Search in authors: <input type="text" style="width:300px" name="author">
+        <dd>Publication year: min <input type="text" name="mintime"> max <input type="text" name="maxtime">
+        <dd>Search type:
+        <select name="type">
+            <option value="conjunctive">Conjunctive</option>
+            <option value="disjunctive">Disjunctive</option>
+        </select>
+        <dd><input type="submit" value="Search">
+    </dl>
+</form>
+</div>
+</body>
