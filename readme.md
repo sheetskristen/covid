@@ -22,6 +22,10 @@ Details on the experiments and respective model configurations can be found in `
 
 A visualization of the best performing model's results can be found in `data/tmnt/results`.
 
-## Metadata browswer 
+## Metadata browser 
 
 To be continued.
+
+## Open relationship Extraction 
+
+To be continued. 
