@@ -10,3 +10,5 @@ test.jsonl
 /data/tmnt/test/
 /data/tmnt/train/
 /data/tmnt/vector_files/
+/pickle/
+/data/CORD-NER-corpus.json
