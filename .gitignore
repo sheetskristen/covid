@@ -12,3 +12,5 @@ test.jsonl
 /data/tmnt/vector_files/
 /pickle/
 /data/CORD-NER-corpus.json
+/data/CORD-NER-PROTEIN-corpus.jsonl
+/data/CORD-NER-PROTEIN-500.jsonl
