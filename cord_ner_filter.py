@@ -12,6 +12,7 @@ import jsonlines
 import argparse
 import spacy
 import copy
+import re
 
 from tqdm import tqdm
 
@@ -49,12 +50,23 @@ def preprocess_sent(sent):
     :param sent: a Spacy span that may contain undesired punctuation, numbers, etc.
     :return: cleaner_sent: a cleaner version of the input
     """
-    tokens = str(sent).split()
+    sent = str(sent)
+
+    # Make parentheticals into synonym-clauses.
+    sent = re.sub('\(', ', or ,', sent)
+    sent = re.sub('\)', ',', sent)
+
+    tokens = sent.split()
+
+    forbidden_tokens = set(
+        '()[]'
+    )
 
     cleaner_tokens = [
         token
         for token in tokens
         if (not token.isnumeric()) or len(token) == 4
+        if token not in forbidden_tokens
     ]
 
     cleaner_sent = ' '.join(cleaner_tokens)
