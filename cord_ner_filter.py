@@ -2,23 +2,17 @@
 The jsonl output of this module contains a dictionary on each line such that:
 > line.keys()
 dict_keys(
-  ['doc_id', 'sents', 'source', 'doi', 'pmcid', 'pubmed_id', 'publish_time', 'authors', 'journal']
+  ['doc_id', 'sent', 'source', 'doi', 'pmcid', 'pubmed_id', 'publish_time', 'authors', 'journal']
 )
 
-line['sents'] is a list of dictionaries such that:
-> line['sents'][i].keys()
-dict_keys(
-  ['sent_id', 'sent_tokens']
-)
-
-line['sents'][i]['sent_tokens'] is a list of string tokens.
-Punctuation tokens are included.
 '''
 
 
 import jsonlines
 import argparse
 import spacy
+import copy
+
 from tqdm import tqdm
 
 
@@ -49,6 +43,25 @@ def sent_to_ent_types(doc):
     return set(map(lambda e: e.label_, doc.ents))
 
 
+def preprocess_sent(sent):
+    """
+    Preprocess a string so that it's ready for next steps in the pipeline.
+    :param sent: a Spacy span that may contain undesired punctuation, numbers, etc.
+    :return: cleaner_sent: a cleaner version of the input
+    """
+    tokens = str(sent).split()
+
+    cleaner_tokens = [
+        token
+        for token in tokens
+        if (not token.isnumeric()) or len(token) == 4
+    ]
+
+    cleaner_sent = ' '.join(cleaner_tokens)
+
+    return cleaner_sent
+
+
 def get_text_from_sents(sents):
     all_tokens = map(lambda s: s['sent_tokens'], sents)
     all_sents = map(lambda tokens: ' '.join(tokens), all_tokens)
@@ -65,9 +78,13 @@ def filter_file(doc_file):
     """
 
     protein_docs = []
+    # Get number of lines in file for tqdm's sake
+    with open(doc_file) as fp:
+        num_lines = len(fp.readlines())
+
     with jsonlines.open(doc_file) as reader:
         # Loop through the JSON lines and collect the relevant documents.
-        for line in tqdm(list(reader), desc=f'Filtering from {doc_file}'):
+        for line in tqdm(reader, desc=f'Filtering from {doc_file}', total=num_lines):
             sents = line['sents']
 
             text = get_text_from_sents(sents)
@@ -79,34 +96,44 @@ def filter_file(doc_file):
                 # A value error may arise if the document is too long, so skip it.
                 continue
 
+            # Loop through the sentences of the document
+            for i, sent in enumerate(doc.sents):
+                # Get a set of the entity types in the sentence.
+                ent_types = sent_to_ent_types(sent)
 
-            # Get a set of the entity types in the sentence.
-            ent_types = sent_to_ent_types(doc)
+                # If one of the types is labeled protein, include it in the output list.
+                if 'PROTEIN' in ent_types:
+                    # > line.keys()
+                    # dict_keys(
+                    #   ['doc_id', 'sents', 'source', 'doi', 'pmcid', 'pubmed_id', 'publish_time', 'authors', 'journal']
+                    # )
+                    # > line['sents'][i].keys()
+                    # dict_keys(
+                    #   ['sent_id', 'sent_tokens']
+                    # )
+                    sent_dict = copy.deepcopy(line)
+                    # Delete the rest of the sentences.
+                    del sent_dict['sents']
+                    # Add only the current sentence.
+                    sent_dict['sent'] = preprocess_sent(sent)
+                    protein_docs.append(sent_dict)
 
-            # If one of the types is labeled protein, include it in the output list.
-            if 'PROTEIN' in ent_types:
-                # > line.keys()
-                # dict_keys(
-                #   ['doc_id', 'sents', 'source', 'doi', 'pmcid', 'pubmed_id', 'publish_time', 'authors', 'journal']
-                # )
-                # > line['sents'][i].keys()
-                # dict_keys(
-                #   ['sent_id', 'sent_tokens']
-                # )
-                protein_docs.append(line)
+                    # Write to the file periodically and reset the list to save on memory.
+                    if len(protein_docs) > 1000:
+                        write_jsonl(protein_docs, args.out_file, mode='a')
+                        protein_docs = []
 
     return protein_docs
 
 
-def write_jsonl(protein_docs, output_file):
+def write_jsonl(protein_docs, output_file, mode='w'):
     """
     Store relevant doucments in a pickle object.
     :param protein_docs: List of dictionaries which contain relevant documents and metadata.
     :param output_file: Jsonl filename of the output file.
     :return: None
     """
-    print(f'Writing output file at {output_file}')
-    with jsonlines.open(output_file, mode='w') as writer:
+    with jsonlines.open(output_file, mode=mode) as writer:
         writer.write_all(protein_docs)
 
 
@@ -121,5 +148,6 @@ if __name__ == '__main__':
 
         protein_docs.extend(file_docs)
 
+    print(f'Writing output file at {out_file}')
     # Write to the jsonl output file.
-    write_jsonl(protein_docs, out_file)
+    write_jsonl(protein_docs, out_file, mode='a')
