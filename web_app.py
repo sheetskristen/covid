@@ -9,6 +9,9 @@ def search_page():
     return render_template('page_query.html')
 
 
+@app.route('/results', methods=['GET', 'POST'])
+def results_page():
+    return render_template('page_results.html')
 
 
 if __name__ == '__main__':

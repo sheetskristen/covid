@@ -4,7 +4,6 @@
     margin: 2em;
     text-align: center;
     align-content: center;
-
 }
 
 a:hover {
@@ -23,6 +22,18 @@ a:hover {
 #form-container {
     border: thick ridge aliceblue;
 
+}
+
+#results-container {
+    border: thick ridge aliceblue;
+    text-align: left !important;
+    margin-right: 5em;
+    width: 60%;
+    padding-top: 1em;
+}
+
+#results-container h2 {
+    text-align: center;
 }
 
 ol.nostyle {
@@ -44,4 +55,9 @@ ol.nostyle {
 
 .btn-secondary {
     background-color: #007bff;
+}
+
+.float-left {
+    float: left;
+    width: 30%;
 }
