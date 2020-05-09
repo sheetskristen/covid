@@ -15,12 +15,10 @@
         <title>CORD Relation Search Results</title>
 
         <script>
-            var numArgs = 2;
-            // Run this Javascript when the page is ready.
-            $(document).ready(function() {
-                // Make the add argument button do its thing
-                $("#add-arg-btn").click(function() {
-                    numArgs++;
+            var numArgs = {{ args|length }};
+
+            function addArg() {
+                numArgs++;
                     let newArgField = $(`<li>
                         <div class="row">
                             <div class="col">
@@ -31,8 +29,24 @@
                     </li>`);
 
                     $(newArgField).appendTo($("#arg-list")).hide().slideDown("fast");
-                });
+            }
+            // Run this Javascript when the page is ready.
+            $(document).ready(function() {
+                // Make the add argument button do its thing
+                $("#add-arg-btn").click(addArg);
+
+                // Use ajax call to lookup doi.
             });
+
+            function lookupDOI(doi) {
+                x = $.ajax({
+                  type: "POST",
+                  url: "https://dx.doi.org/doi",
+                  data: {
+                      'hdl': doi
+                  },
+                });
+            }
         </script>
     </head>
 
@@ -57,22 +71,16 @@
                         <div class="col">
                             <ol class="nostyle" id="arg-list">
                                 <b>Arguments</b>
-                                <li>
-                                    <div class="row">
-                                        <div class="col">
-                                            <input class="form-control justify-content-center"
-                                                   type="text" name="arg1" placeholder="S-Protein">
+                                {% for arg in args %}
+                                    <li>
+                                        <div class="row">
+                                            <div class="col">
+                                                <input class="form-control justify-content-center"
+                                                       type="text" name="arg{{ loop.index }}" value="{{ arg }}" placeholder="...">
+                                            </div>
                                         </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="row">
-                                        <div class="col">
-                                            <input class="form-control justify-content-center"
-                                                   type="text" name="arg2" placeholder="ACE2">
-                                        </div>
-                                    </div>
-                                </li>
+                                    </li>
+                                {% endfor %}
                             </ol>
                             <div class="row">
                                 <div class="col">
@@ -95,11 +103,22 @@
             <div class="container" id="results-container">
                 <h2>Search Results</h2>
                 <hr>
-                <ol>
+                <ol class="nostyle list-group">
                     {# List results here. #}
-                    {% for result in results %}
-                        <li>
-
+                    {% for result in result_list.values() %}
+                        <li class="list-group-item">
+                            <ol class="nostyle list-group">
+                                <b>DOI</b><p><a href="https://dx.doi.org/{{ result['doi'] }}">{{ result['doi'] }}</a></p>
+                                <b>Predicate</b><p>{{ result['predicate'] }}</p>
+                                <b>Arguments</b>
+                                <ol class="nostyle list-group">
+                                    {% for arg in result['arguments'] %}
+                                        {% if arg != '' and '.' not in arg %}
+                                            <p>{{ arg }}</p>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ol>
+                            </ol>
                         </li>
                     {% endfor %}
                 </ol>
