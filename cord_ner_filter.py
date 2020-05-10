@@ -1,4 +1,8 @@
 '''
+Author: Julian Fernandez
+
+This module produces jsonl output that is deemed by our NER system to contain protein entities.
+
 The jsonl output of this module contains a dictionary on each line such that:
 > line.keys()
 dict_keys(

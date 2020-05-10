@@ -1,3 +1,11 @@
+"""
+Author: Julian Fernandez
+
+This file generates an elasticsearch index. Run this before running web_app.py.
+Make sure that elasticsearch is running in the background beforehand.
+"""
+
+
 import csv
 import time
 
@@ -13,9 +21,11 @@ connections.create_connection(hosts=['127.0.0.1'])
 # Create elasticsearch object
 es = Elasticsearch()
 
+# Analyzers for both the predicate and arguments.
 predicate_analyzer = analyzer('covid_predicate_analyzer',
                               tokenizer='whitespace',
-                              filter=['lowercase'])
+                              # Use a stemmer to capture predicates with similar stems.
+                              filter=['lowercase', 'stemmer'])
 
 argument_analyzer = analyzer('covid_argument_analyzer',
                              tokenizer='whitespace',
@@ -23,6 +33,11 @@ argument_analyzer = analyzer('covid_argument_analyzer',
 
 
 class RelationDocument(Document):
+    """
+    A RelationDocument contains two text fields for querying over.
+    predicate refers to the tuple's first element.
+    arguments refers to the tuple's remaining elements.
+    """
     predicate = Text(analyzer=predicate_analyzer)
     arguments = Text(analyzer=argument_analyzer)
 
@@ -31,6 +46,10 @@ class RelationDocument(Document):
 
 
 def build_index():
+    """
+    Main function of this module. Build the covid relation index.
+    :return: None
+    """
     covid_index = Index('covid_relation_index')
 
     if covid_index.exists():
@@ -46,9 +65,13 @@ def build_index():
         reader = csv.reader(csvfile)
         header = next(reader)
 
+        # For each value in the CSV file, create a dictionary entry to store
+        # it's information in the appropriate place.
         for i, cols in enumerate(reader):
             metadata[str(i+1)] = {}
             for key, col in zip(header, cols):
+                # If the value type is triple, decompose the value
+                # into arg subcomponents.
                 if key == 'triple':
                     # Get the predicate and the arguments.
                     predicate, *args = col[2:-2].replace('\'', '').split(',')
@@ -65,10 +88,15 @@ def build_index():
                     '_index': 'covid_relation_index',
                     '_type': '_doc',
                     '_id': rel_id,
+                    # The DOI allows us to link directly to the article's page where it's hosted.
                     'doi': metadata[dict_id]['doi'],
+                    # The doc_id refers to the CORD-NER-corpus.json dataset. This field is unused in our web app.
                     'doc_id': metadata[dict_id]['doc_id'],
+                    # Sent refers to the sentence from which the document was drawn.
                     'sent': metadata[dict_id]['sent'],
+                    # Predicate refers to the predicate as explained in the RelationDocument class
                     'predicate': metadata[dict_id]['predicate'],
+                    # Argument refers to the arguments as explained in the RelationDocument class
                     'arguments': metadata[dict_id]['arguments'],
                 }
             except ValueError:
@@ -77,6 +105,7 @@ def build_index():
     helpers.bulk(es, actions())
 
 
+# Run this module to build the index.
 if __name__ == '__main__':
     start_time = time.time()
     build_index()
