@@ -1,0 +1,100 @@
+<!doctype html>
+
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="shortcut icon" href="#" />
+        <script src="https://code.jquery.com/jquery-3.5.0.js" integrity="sha256-r/AaFHrszJtwpe+tHyNi/XCfMxYpbsRg2Uqn0x3s2zc="
+            crossorigin="anonymous">
+        </script>
+        <link rel="stylesheet" href="../static/stylesheets/stylesheet.css">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>CORD Relation Search Results</title>
+
+        <script>
+            var numArgs = 2;
+            // Run this Javascript when the page is ready.
+            $(document).ready(function() {
+                // Make the add argument button do its thing
+                $("#add-arg-btn").click(function() {
+                    numArgs++;
+                    let newArgField = $(`<li>
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-control justify-content-center"
+                                       type="text" name="arg${numArgs}" placeholder="...">
+                            </div>
+                        </div>
+                    </li>`);
+
+                    $(newArgField).appendTo($("#arg-list")).hide().slideDown("fast");
+                });
+            });
+        </script>
+    </head>
+
+
+    <body>
+        <div id="content-container">
+            <h1><a href="/">CORD Relation Search</a></h1>
+            <hr>
+            <form action="/results" name="search" method="post" class="float-left" id="sidebar">
+                <div class="container" id="form-container">
+                    <div class="row">
+                        <div class="col">
+                            <b>Predicate</b>
+                            <div class="row">
+                                <div class="col">
+                                    <input class="form-control justify-content-center"
+                                           type="text" name="predicate" placeholder="Inhibits">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <ol class="nostyle" id="arg-list">
+                                <b>Arguments</b>
+                                <li>
+                                    <div class="row">
+                                        <div class="col">
+                                            <input class="form-control justify-content-center"
+                                                   type="text" name="arg1" placeholder="S-Protein">
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="row">
+                                        <div class="col">
+                                            <input class="form-control justify-content-center"
+                                                   type="text" name="arg2" placeholder="ACE2">
+                                        </div>
+                                    </div>
+                                </li>
+                            </ol>
+                            <div class="row">
+                                <div class="col">
+                                    <button type="button" class="btn btn-info" id="add-arg-btn">
+                                        <i class="fa fa-plus" aria-hidden="true"></i> Add argument
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+
+                <button type="submit" class="btn-primary btn btn-info">
+                    <i class="fa fa-search" aria-hidden="true"></i> Search
+                </button>
+            </form>
+        </div>
+
+
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </body>
+</html>
