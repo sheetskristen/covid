@@ -34,19 +34,7 @@
             $(document).ready(function() {
                 // Make the add argument button do its thing
                 $("#add-arg-btn").click(addArg);
-
-                // Use ajax call to lookup doi.
             });
-
-            function lookupDOI(doi) {
-                x = $.ajax({
-                  type: "POST",
-                  url: "https://dx.doi.org/doi",
-                  data: {
-                      'hdl': doi
-                  },
-                });
-            }
         </script>
     </head>
 

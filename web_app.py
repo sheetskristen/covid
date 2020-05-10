@@ -1,3 +1,13 @@
+"""
+Author: Julian Fernandez
+
+This module defines a web app for querying over our extracted protein tuples.
+
+index.py must be run before this file as the web app uses that module's output index for querying over.
+
+View the web app in your browser with the link provided upon running this file.
+"""
+
 from flask import *
 from elasticsearch_dsl import Search
 from elasticsearch_dsl.connections import connections
@@ -15,11 +25,18 @@ g_args = []
 
 @app.route('/')
 def search_page():
+    """
+    :return: the rendered root page.
+    """
     return render_template('page_query.html')
 
 
 @app.route('/results', methods=['GET', 'POST'])
 def results_page():
+    """
+
+    :return:
+    """
     global g_predicate, g_args
 
     # Get form info.
