@@ -57,13 +57,13 @@ def preprocess_sent(sent):
     sent = str(sent)
 
     # Make parentheticals into synonym-clauses.
-    sent = re.sub('\(', ', or ,', sent)
+    sent = re.sub('\(', ', or', sent)
     sent = re.sub('\)', ',', sent)
 
     tokens = sent.split()
 
     forbidden_tokens = set(
-        '()[]'
+        '()[].,;!?`-'
     )
 
     cleaner_tokens = [
