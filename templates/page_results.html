@@ -51,7 +51,7 @@
                             <div class="row">
                                 <div class="col">
                                     <input class="form-control justify-content-center"
-                                           type="text" name="predicate" value="{{ predicate }}" placeholder="Inhibits">
+                                           type="text" name="predicate" value="{{ predicate }}" placeholder="Increase">
                                 </div>
                             </div>
                         </div>
@@ -106,6 +106,8 @@
                                         {% endif %}
                                     {% endfor %}
                                 </ol>
+                                <b>Sentence</b>
+                                <p>{{ result['sent'] }}</p>
                             </ol>
                         </li>
                     {% endfor %}
