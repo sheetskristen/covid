@@ -88,7 +88,7 @@ if __name__ == '__main__':
     triples = parse(data)
     with open(fo, 'w', encoding='utf-8') as output_file:
         fieldnames = list(triples[0].keys())
-        writer = csv.DictWriter(output_file, fieldnames=fieldnames, quotechar='"', quoting=csv.QUOTE_All)
+        writer = csv.DictWriter(output_file, fieldnames=fieldnames, quotechar='"', quoting=csv.QUOTE_ALL)
         writer.writeheader()
         for relation in tqdm(triples, desc="Writing file"):
             writer.writerow(relation)
