@@ -26,6 +26,7 @@ g_args = []
 @app.route('/')
 def search_page():
     """
+    Render the homepage of the UI. Users query here.
     :return: the rendered root page.
     """
     return render_template('page_query.html')
@@ -35,7 +36,7 @@ def search_page():
 def results_page():
     """
 
-    :return:
+    :return: rendered SERP page.
     """
     global g_predicate, g_args
 

@@ -34,6 +34,13 @@
             $(document).ready(function() {
                 // Make the add argument button do its thing
                 $("#add-arg-btn").click(addArg);
+
+                {% for result in result_list.values() %}
+                    jsonObj{{ loop.index }} = $.getJSON("https://cors-anywhere.herokuapp.com/https://dx.doi.org/{{ result['doi'] }}");
+                    jsonObj{{ loop.index }}.done(function () {
+                        $(`#title-{{ loop.index }}`).html(jsonObj{{ loop.index }}.responseJSON.title);
+                    });
+                {% endfor %}
             });
         </script>
     </head>
@@ -91,11 +98,15 @@
             <div class="container" id="results-container">
                 <h2>Search Results</h2>
                 <hr>
+                <h4>Total results: {{ num_results }}</h4>
+                <hr>
+
                 <ol class="nostyle list-group">
                     {# List results here. #}
                     {% for result in result_list.values() %}
                         <li class="list-group-item">
                             <ol class="nostyle list-group">
+                                <b>Article Title</b><p id="title-{{ loop.index }}"></p>
                                 <b>DOI</b><p><a href="https://dx.doi.org/{{ result['doi'] }}">{{ result['doi'] }}</a></p>
                                 <b>Predicate</b><p>{{ result['predicate'] }}</p>
                                 <b>Arguments</b>
