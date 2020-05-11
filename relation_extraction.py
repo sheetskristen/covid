@@ -13,7 +13,7 @@ parser.add_argument('--in_file', type=str,
                     default='data/CORD-NER-PROTEIN-corpus.jsonl',
                     help='Filepath to jsonl file which contain the sentences to create relations from.')
 parser.add_argument('--out_file', type=str, default='data/relations.csv',
-                    help='csv output file to which CORD-NER protein entity-containing relations'
+                    help='csv output file to which CORD-NER protein entity-containing relations '
                          'will be written (header: doc_id, sent, triple, analysis)')
 args = parser.parse_args()
 fi = args.in_file
@@ -50,13 +50,25 @@ def parse(data):
                 relation_lst = [token]
                 for child in token.children:
                     if child.pos_  not in ["PUNCT", "AUX"] and \
-                        child.text not in ['it', 'there'] and \
-                        child.dep_ != 'advmod': #exclude auxes, punc, expletives and adverbal modifiers
-
-                        left_edge = child.left_edge.i
-                        right_edge = child.right_edge.i + 1
-                        triple_lst.append(doc[left_edge:right_edge].text)
-                        relation_lst.append(doc[left_edge:right_edge])
+                        child.text not in ['it', 'there', 'we'] and \
+                        child.dep_ not in ['advmod']: #exclude auxes, punc, expletives and adverbal modifiers
+                        if child.dep_ == 'cc':
+                            if len([c for c in child.children]) != 0 and \
+                                    'advmod' not in [c.dep_ for c in child.children] and \
+                                    'quantmod' not in [c.dep_ for c in child.children]:
+                                left_edge = child.left_edge.i
+                                right_edge = child.right_edge.i + 1
+                                triple_lst.append(doc[left_edge:right_edge].text)
+                                relation_lst.append(doc[left_edge:right_edge])
+                                # print(sent, triple_lst)
+                                # print(child.text, child.dep_, child.head.text, child.head.pos_,
+                                #       [c for c in child.children], [c.dep_ for c in child.children])
+                        else:
+                            left_edge = child.left_edge.i
+                            right_edge = child.right_edge.i + 1
+                            if doc[left_edge:right_edge].text not in ["the", "or", "and"]:
+                                triple_lst.append(doc[left_edge:right_edge].text)
+                                relation_lst.append(doc[left_edge:right_edge])
 
                 if len(triple_lst) > 1:
                     triple.update({'triple': triple_lst})
@@ -76,7 +88,7 @@ if __name__ == '__main__':
     triples = parse(data)
     with open(fo, 'w', encoding='utf-8') as output_file:
         fieldnames = list(triples[0].keys())
-        writer = csv.DictWriter(output_file, fieldnames=fieldnames)
+        writer = csv.DictWriter(output_file, fieldnames=fieldnames, quotechar='"', quoting=csv.QUOTE_All)
         writer.writeheader()
         for relation in tqdm(triples, desc="Writing file"):
             writer.writerow(relation)
