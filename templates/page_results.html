@@ -35,12 +35,24 @@
                 // Make the add argument button do its thing
                 $("#add-arg-btn").click(addArg);
 
-                {% for result in result_list.values() %}
-                    jsonObj{{ loop.index }} = $.getJSON("https://cors-anywhere.herokuapp.com/https://dx.doi.org/{{ result['doi'] }}");
-                    jsonObj{{ loop.index }}.done(function () {
-                        $(`#title-{{ loop.index }}`).html(jsonObj{{ loop.index }}.responseJSON.title);
-                    });
-                {% endfor %}
+                // Setup conjunctive/disjunctive search functionality.
+                $("#conjunctive-option").click(function() {
+                    $("#search-type").html("Conjunctive Search");
+                    $("#search-type-input").attr("value", "and");
+                });
+
+                $("#disjunctive-option").click(function() {
+                    $("#search-type").html("Disjunctive Search");
+                    $("#search-type-input").attr("value", "or");
+                })
+
+               {% for result in result_list.values() %}
+
+                   jsonObj{{ loop.index }} = $.getJSON("https://cors-anywhere.herokuapp.com/https://dx.doi.org/{{ result['doi'] }}");
+                   jsonObj{{ loop.index }}.done(function () {
+                       $(`#title-{{ loop.index }}`).html(jsonObj{{ loop.index }}.responseJSON.title);
+                   });
+               {% endfor %}
             });
         </script>
     </head>
@@ -61,6 +73,20 @@
                                            type="text" name="predicate" value="{{ predicate }}" placeholder="Increase">
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col">
+                                    <input type="hidden" id="search-type-input" name="search-type" value="{{ search_label }}">
+                                    <div class="dropdown">
+                                      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span id="search-type">{{ 'Conjunctive' if search_label == 'and' else 'Disjunctive' }} Search</span>
+                                      </button>
+                                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <div class="dropdown-item" style="cursor: pointer;" id="conjunctive-option">Conjunctive Search</div>
+                                        <div class="dropdown-item" style="cursor: pointer;" id="disjunctive-option">Disjunctive Search</div>
+                                      </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="col">
@@ -77,8 +103,9 @@
                                     </li>
                                 {% endfor %}
                             </ol>
+
                             <div class="row">
-                                <div class="col">
+                                <div class="col-lg">
                                     <button type="button" class="btn btn-info" id="add-arg-btn">
                                         <i class="fa fa-plus" aria-hidden="true"></i> Add argument
                                     </button>
@@ -86,19 +113,40 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
                 <hr>
-
-
-                <button type="submit" class="btn-primary btn btn-info">
-                    <i class="fa fa-search" aria-hidden="true"></i> Search
-                </button>
+                <div class="row">
+                    <div class="col">
+                        <button type="submit" class="btn-primary btn btn-info">
+                            <i class="fa fa-search" aria-hidden="true"></i> Search
+                        </button>
+                    </div>
             </form>
+
+                {% if page_num > 1 %}
+                    <form action="/results/{{page_num-1}}" name="previouspage" method="get">
+                        <button class="btn btn-info" type="submit" value="Previous">
+                            <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                        </button>
+                    </form>
+                {% endif %}
+
+                {% if ((num_results / 10)|round(0, 'ceil')) > page_num %}
+                    <form action="/results/{{page_num+1}}" name="nextpage" method="get">
+                        <button class="btn btn-info" type="submit" value="Next">
+                            <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                        </button>
+                    </form>
+                {% endif %}
+                </div>
 
             <div class="container" id="results-container">
                 <h2>Search Results</h2>
                 <hr>
                 <h4>Total results: {{ num_results }}</h4>
+                <h5>Showing {{ 1+(page_num-1)*10 }} - {{ 1+(page_num-1)*10 + 10 if 1+(page_num-1)*10 + 10 <= num_results else num_results }}</h5>
+
                 <hr>
 
                 <ol class="nostyle list-group">

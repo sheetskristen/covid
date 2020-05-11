@@ -32,6 +32,17 @@
 
                     $(newArgField).appendTo($("#arg-list")).hide().slideDown("fast");
                 });
+
+                // Setup conjunctive/disjunctive search functionality.
+                $("#conjunctive-option").click(function() {
+                    $("#search-type").html("Conjunctive Search");
+                    $("#search-type-input").attr("value", "and");
+                });
+
+                $("#disjunctive-option").click(function() {
+                    $("#search-type").html("Disjunctive Search");
+                    $("#search-type-input").attr("value", "or");
+                });
             });
         </script>
     </head>
@@ -52,6 +63,7 @@
                                        type="text" name="predicate" placeholder="Inhibits">
                             </div>
                         </div>
+
                     </div>
 
                     <div class="col">
@@ -74,22 +86,41 @@
                                 </div>
                             </li>
                         </ol>
+
                         <div class="row">
+                            <div class="col">
+                                <input type="hidden" id="search-type-input" name="search-type" value="{{ search_label }}">
+                                <div class="dropdown">
+                                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span id="search-type">{{ 'Conjunctive' if search_label == 'and' else 'Disjunctive' }} Search</span>
+                                  </button>
+                                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <div class="dropdown-item" style="cursor: pointer;" id="conjunctive-option">Conjunctive Search</div>
+                                    <div class="dropdown-item" style="cursor: pointer;" id="disjunctive-option">Disjunctive Search</div>
+                                  </div>
+                                </div>
+                            </div>
                             <div class="col">
                                 <button type="button" class="btn btn-info" id="add-arg-btn">
                                     <i class="fa fa-plus" aria-hidden="true"></i> Add argument
                                 </button>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
             <hr>
 
+            <div class="row">
+                <div class="col-sm">
+                    <button type="submit" class="btn-primary btn btn-info">
+                        <i class="fa fa-search" aria-hidden="true"></i> Search
+                    </button>
+                </div>
+            </div>
 
-            <button type="submit" class="btn-primary btn btn-info">
-                <i class="fa fa-search" aria-hidden="true"></i> Search
-            </button>
+
         </form>
 
         </div>
