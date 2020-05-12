@@ -1,3 +1,10 @@
+'''
+Author: Kristen Sheets
+
+This module creates a merges .jsonl files created with document_parser.py
+
+'''
+
 import jsonlines
 from tqdm import tqdm
 

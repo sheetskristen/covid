@@ -1,3 +1,11 @@
+'''
+Author: Kristen Sheets
+
+This module creates a  relationship .csv file using SciSpacy\'s dependency parser.
+The csv output file to which CORD-NER protein entity-containing relations will be written
+has the following header: doc_id,sent,doi,triple,analysis
+
+'''
 import argparse
 import csv
 
@@ -7,14 +15,14 @@ import spacy
 
 # Command line arguments.
 parser = argparse.ArgumentParser(description='Create relationship .csv file using'
-                                             ' SciSpacy\'s en_ner_jnlpba_md NER model.')
+                                             ' SciSpacy\'s dependency parses.')
 
 parser.add_argument('--in_file', type=str,
                     default='data/CORD-NER-PROTEIN-corpus.jsonl',
                     help='Filepath to jsonl file which contain the sentences to create relations from.')
 parser.add_argument('--out_file', type=str, default='data/relations.csv',
                     help='csv output file to which CORD-NER protein entity-containing relations '
-                         'will be written (header: doc_id, sent, triple, analysis)')
+                         'will be written (header: doc_id,sent,doi,triple,analysis)')
 args = parser.parse_args()
 fi = args.in_file
 fo = args.out_file
@@ -66,7 +74,7 @@ def parse(data):
                         else:
                             left_edge = child.left_edge.i
                             right_edge = child.right_edge.i + 1
-                            if doc[left_edge:right_edge].text not in ["the", "or", "and"]:
+                            if doc[left_edge:right_edge].text not in ["the", "or", "and", "they"]:
                                 triple_lst.append(doc[left_edge:right_edge].text)
                                 relation_lst.append(doc[left_edge:right_edge])
 
@@ -88,7 +96,7 @@ if __name__ == '__main__':
     triples = parse(data)
     with open(fo, 'w', encoding='utf-8') as output_file:
         fieldnames = list(triples[0].keys())
-        writer = csv.DictWriter(output_file, fieldnames=fieldnames, quotechar='"', quoting=csv.QUOTE_All)
+        writer = csv.DictWriter(output_file, fieldnames=fieldnames, quotechar='"', quoting=csv.QUOTE_ALL)
         writer.writeheader()
         for relation in tqdm(triples, desc="Writing file"):
             writer.writerow(relation)

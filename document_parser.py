@@ -1,3 +1,10 @@
+'''
+Author: Kristen Sheets
+
+This module creates a preprocesses the data from the CORD-19 dataset. Removing non-contentful high-frequency content.
+Data analysis for preprocessing was done using TF-IDF.
+
+'''
 import json
 from os import walk
 from string import punctuation

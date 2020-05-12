@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser(description='Filter relevant documents with'
                                              ' SciSpacy\'s en_ner_jnlpba_md NER model.')
 
 parser.add_argument('--doc_files', type=str, nargs='+',
-                    default=['data/CORD-NER-CORPUS.json'],
+                    default=['data/CORD-NER-corpus.json'],
                     help='List of filepaths to jsonl files which contain documents to be filtered.')
 parser.add_argument('--out_file', type=str, default='data/CORD-NER-PROTEIN-corpus.jsonl',
                     help='jsonl output file to which CORD-NER protein entity-containing documents'
