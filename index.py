@@ -101,6 +101,8 @@ def build_index():
                 }
             except ValueError:
                 continue
+            except KeyError:
+                continue
 
     helpers.bulk(es, actions())
 
